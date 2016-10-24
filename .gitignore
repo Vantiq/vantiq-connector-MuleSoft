@@ -1,0 +1,53 @@
+# npm/logs
+logs
+*.log
+npm-debug.log*
+
+# NodeJS dependencies
+node_modules/
+
+# Vert.x
+.vertx/
+
+# VantIQ
+dist/
+
+# Ignore any Vantiq profiles so they are not accidentally checked in
+vantiq_profile.js
+
+# OSX artifacts
+.DS_Store
+
+### Intellij ###
+.idea/
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Gradle
+.gradle/
+build/
