@@ -14,7 +14,27 @@ Mule 3.5+
 
 # Installation 
 
-For beta connectors you can download the source code and build it with devkit to find it available on your local repository. Then you can add it to Studio.
+## Local
+
+To build and install locally, clone this repo.  Then, build and package the connector:
+
+```
+mvn clean package
+```
+
+The connector can be uploaded and installed into Anypoint Studio using Help → Install New Software.  To install from the exploded form, install from:
+
+```
+target/update-site
+```
+
+To install from the Zip file form, install from:
+
+```
+target/UpdateSite.zip
+```
+
+## Update Site
 
 For released connectors you can download them from the update site in Anypoint Studio. 
 Open Anypoint Studio, go to Help → Install New Software and select Anypoint Connectors Update Site where you’ll find all avaliable connectors.

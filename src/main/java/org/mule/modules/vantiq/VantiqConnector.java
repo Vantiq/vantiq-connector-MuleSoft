@@ -96,7 +96,8 @@ public class VantiqConnector {
      * @param callback Callback for the messages
      */
     @Source(sourceStrategy = SourceStrategy.POLLING, pollingPeriod = 30000)
-    public void selectData(String dataType, 
+    @UserDefinedMetaData
+    public void selectData(@MetaDataKeyParam String dataType, 
                            @Optional List<String> selectList,
                            @Optional Map<String,Object> where,
                            final SourceCallback callback) {
