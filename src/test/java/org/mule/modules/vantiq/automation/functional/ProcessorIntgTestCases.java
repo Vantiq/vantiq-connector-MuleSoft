@@ -21,31 +21,36 @@
  */
 package org.mule.modules.vantiq.automation.functional;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mule.common.Result;
 import org.mule.common.metadata.DefinedMapMetaDataModel;
 import org.mule.common.metadata.MetaData;
 import org.mule.common.metadata.MetaDataKey;
 import org.mule.modules.vantiq.VantiqConnector;
 import org.mule.tools.devkit.ctf.junit.AbstractTestCase;
 
-public class VantiqConnectorIntegrationTestCases extends AbstractTestCase<VantiqConnector> {
+public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     
 //    private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public VantiqConnectorIntegrationTestCases() {
+    public ProcessorIntgTestCases() {
         super(VantiqConnector.class);
     }
     
     @Test
     public void verifyGetSupportedActions() throws Exception {
         List<Map<String,Object>> actions = getConnector().getSupportedActions();
-        assert(actions.size() > 0);
+        assertThat("Got actions", actions.size(), greaterThan(0));
     }
     
     @Test
@@ -58,22 +63,31 @@ public class VantiqConnectorIntegrationTestCases extends AbstractTestCase<Vantiq
         payloadList.add(payload);
 
         boolean status = getConnector().publishData(dataType, payloadList);
-        assert(status);
+        assertThat("Successful", status, is(true));
     }
     
     @Test
     public void verifyMetaDataKeys() throws Exception {
-        Result<List<MetaDataKey>> result = getDispatcher().fetchMetaDataKeys();
-        assert(result.get().size() > 0);
+        List<MetaDataKey> result = getDispatcher().fetchMetaDataKeys().get();
+        assertThat("At least one metadata type", result, not(empty()));
         
-        for(MetaDataKey key : result.get()) {
+        for(MetaDataKey key : result) {
             if("TestType".equals(key.getId())) {
                 MetaData md = getDispatcher().fetchMetaData(key).get();
                 DefinedMapMetaDataModel model = (DefinedMapMetaDataModel) md.getPayload();
-                assert(model.getKeys().size() > 0);
+                assertThat("Non-empty set of metadata properties", model.getKeys(), not(empty()));
                 break;
             }
         }
+    }
+    
+    @Test
+    public void verifyPublishTopic() throws Exception {
+        Map<String,Object> payload = new HashMap<String,Object>();
+        payload.put("id", "abc");
+        payload.put("x", "def");
+        boolean status = getConnector().publishTopic("/test/topic", payload);
+        assertThat("Successful", status, is(true));
     }
 
 }

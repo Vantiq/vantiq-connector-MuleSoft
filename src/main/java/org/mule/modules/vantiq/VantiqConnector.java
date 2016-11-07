@@ -52,7 +52,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
 import io.vantiq.client.ResponseHandler;
+import io.vantiq.client.SubscriptionCallback;
+import io.vantiq.client.SubscriptionMessage;
 import io.vantiq.client.Vantiq;
+import io.vantiq.client.Vantiq.TypeOperation;
 import io.vantiq.client.VantiqError;
 import io.vantiq.client.VantiqResponse;
 import okhttp3.Response;
@@ -86,6 +89,81 @@ public class VantiqConnector {
     // Sources
     //--------------------------------------------------------------------------
 
+    private void subscribe(String resource, 
+                           String id,
+                           TypeOperation op, 
+                           final SourceCallback callback) {
+        final String path;
+        if(op == null) {
+            path = resource + "/" + id;            
+        } else {
+            path = resource + "/" + id + "/" + op.toString().toLowerCase();
+        }
+        this.vantiq.subscribe(resource, id, op, new SubscriptionCallback() {
+
+            @Override public void onConnect() {                
+                log.info("Subscription successful: " + path);
+            }
+
+            @Override public void onMessage(SubscriptionMessage message) {
+                try {
+                    callback.process(message.getBody());
+                } catch(Exception ex) {
+                    log.error("Subscription Error", ex);
+                }
+            }
+
+            @Override public void onError(String error) {
+                log.error(error);
+            }
+
+            @Override public void onFailure(Throwable t) {
+                log.error("Failure", t);
+            }
+            
+        });
+    }
+    
+    /**
+     * Creates a source that generates messages from PUBLISH events in Vantiq on 
+     * a specific topic. 
+     * 
+     * @param topic The publish topic to subscribe to (e.g. "/test/topic")
+     */
+    @Source(sourceStrategy = SourceStrategy.NONE)
+    public void subscribeTopic(String topic,
+                               SourceCallback callback) {
+        this.subscribe(Vantiq.SystemResources.TOPICS.value(), topic, null, callback);
+    }
+
+    /**
+     * Creates a source that generates messages from TYPE events in Vantiq on 
+     * a specific type with a specific operation. 
+     * 
+     * @param dataType The Vantiq data type that will generate the events
+     * @param operation The type operation to listen to (i.e. "insert", "update", "delete")
+     */
+    @Source(sourceStrategy = SourceStrategy.NONE)
+    @UserDefinedMetaData
+    public void subscribeType(@MetaDataKeyParam String dataType, 
+                              TypeOperation operation,
+                              SourceCallback callback) {
+        this.subscribe(Vantiq.SystemResources.TYPES.value(), dataType, operation, callback);
+    }
+    
+    /**
+     * Creates a source that generates messages from SOURCE events in Vantiq on 
+     * a specific Vantiq Source.
+     * 
+     * @param source The Vantiq source that will generate the events
+     * @param operation The type operation to listen to (i.e. "insert", "update", "delete")
+     */
+    @Source(sourceStrategy = SourceStrategy.NONE)
+    public void subscribeSource(String source,
+                                SourceCallback callback) {
+        this.subscribe(Vantiq.SystemResources.SOURCES.value(), source, null, callback);
+    }
+        
     /**
      * Performs a query into the Vantiq system and returns the results as
      * messages.  The query has a default polling period of 30 seconds.
@@ -175,14 +253,29 @@ public class VantiqConnector {
         Map<String,Object> message = new HashMap<String,Object>();
         message.put("type", dataType);
         message.put("content", payload);
+        
+        return this.publishTopic(topic, message);
+    }
     
-        VantiqResponse response = this.vantiq.publish(Vantiq.SystemResources.TOPICS.value(), topic, message);
+    /**
+     * Publishes to a specific topic in Vantiq.
+     * 
+     * @param topic The name of the topic to publish to (e.g. "/test/topic")
+     * @param payload The content of the publish event.  Note this will be transformed to JSON using GSON.
+     * 
+     * @return if the publish was successful
+     */
+    @Processor
+    public boolean publishTopic(String topic,
+                                final @Default("#[payload]") Object payload) throws IOException {
+        VantiqResponse response = this.vantiq.publish(Vantiq.SystemResources.TOPICS.value(), topic, payload);
         if(response.isSuccess()) {
             return true;
         } else {
             throw new VantiqException(response);
         }
     }
+
     
     //--------------------------------------------------------------------------
     // Getters/Setters

@@ -30,11 +30,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.mule.modules.vantiq.VantiqConnector;
-import org.mule.modules.vantiq.automation.functional.VantiqConnectorIntegrationTestCases;
+import org.mule.modules.vantiq.automation.functional.ProcessorIntgTestCases;
+import org.mule.modules.vantiq.automation.functional.SourceIntgTestCases;
 import org.mule.tools.devkit.ctf.mockup.ConnectorTestContext;
 
 @RunWith(Suite.class)
-@SuiteClasses({ VantiqConnectorIntegrationTestCases.class })
+@SuiteClasses({ ProcessorIntgTestCases.class,
+                SourceIntgTestCases.class })
 
 public class FunctionalTestSuite {
 
