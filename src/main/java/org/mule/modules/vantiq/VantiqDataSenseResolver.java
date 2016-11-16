@@ -49,9 +49,10 @@ import io.vantiq.client.Vantiq;
 import io.vantiq.client.VantiqResponse;
 
 /**
- * DataSense resolver that pulls data type information from a Vantiq system.
+ * DataSense resolver that is responsible for querying Vantiq for data type information 
+ * from the Vantiq system.
  * 
- *  @author Vantiq
+ * @author Vantiq
  */
 @MetaDataCategory
 public class VantiqDataSenseResolver {
@@ -153,10 +154,20 @@ public class VantiqDataSenseResolver {
         return metaData;
     }
 
+    /**
+     * Returns the connector instance.
+     * 
+     * @return The Vantiq connector
+     */
     public VantiqConnector getConnector() {
         return connector;
     }
 
+    /**
+     * Sets the connector instance.
+     * 
+     * @param connector The Vantiq connector
+     */
     public void setConnector(VantiqConnector connector) {
         this.connector = connector;
         this.vantiq = this.connector.getConnectionManagement().getVantiq();

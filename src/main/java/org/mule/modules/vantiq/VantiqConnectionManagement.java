@@ -40,7 +40,10 @@ import io.vantiq.client.Vantiq;
 import io.vantiq.client.VantiqResponse;
 
 /**
- * Provides the connectivity to a Vantiq system using the Vantiq Java SDK.
+ * Provides the connectivity to a Vantiq system using the 
+ * <a href="https://github.com/Vantiq/vantiq-sdk-java">Vantiq Java SDK</a>.
+ * 
+ * Basic (i.e. username/password) authentication is used to connect to Vantiq.
  * 
  * @author Vantiq
  */
@@ -51,32 +54,47 @@ public class VantiqConnectionManagement {
 
     private Vantiq vantiq;
     
+    /**
+     * The server URL of the Vantiq server.  The Vantiq cloud servers are: 
+     * <ul>
+     *   <li>Production: https://api.vantiq.com</li>
+     *   <li>Development: https://dev.vantiq.com</li>
+     * </ul>
+     */
     @Configurable
-    @Default("https://dev.vantiq.com")
+    @Default("https://api.vantiq.com")
     private String server;
     
+    /**
+     * The Vantiq topic that is used on the Vantiq side to handle 
+     * requests from Anypoint to import data into Vantiq.
+     */
     @Configurable
-    @Default("1")
-    private int apiVersion;
-
-    @Configurable
-    @Default("/system/adapter/MuleSoft/inbound")
+    @Default("/system/connector/MuleSoft/inbound")
     private String topic;
-    
-    @Configurable
-    @Default("30000")
-    private int timeout;
     
     //--------------------------------------------------------------------------
     // Connection Management Methods
     //--------------------------------------------------------------------------    
     
+    /**
+     * Connects to Vantiq using the provided credentials and the configured
+     * server URL.
+     * 
+     * If HTTP 401 is returned, then an INCORRECT_CREDENTIALS exception is thrown.
+     * If HTTP 404 is returned, then an UNKNOWN_HOST exception is thrown.
+     * If HTTP 5xx or another 4xx is return, then an UNKNOWN exception is thrown. 
+     * 
+     * @param username The username on the Vantiq server
+     * @param password The password on the Vantiq server
+     * @throws ConnectionException If the connection fails
+     */
     @Connect
     @TestConnectivity
     public void connect(@ConnectionKey String username, @Password String password) 
         throws ConnectionException {
-
-        this.vantiq = new Vantiq(this.server, this.apiVersion);
+        
+        this.vantiq = new Vantiq(this.server);
 
         VantiqResponse response = this.vantiq.authenticate(username, password);
         int code = response.getStatusCode();
@@ -93,21 +111,41 @@ public class VantiqConnectionManagement {
         }
     }
     
+    /**
+     * Disconnects from Vantiq, closing down all active subscriptions.
+     */
     @Disconnect
     public void disconnect() {
+        this.vantiq.unsubscribeAll();
         this.vantiq = null;
     }
     
+    /**
+     * Returns the unique identifier for the connection which is the access token
+     * created during the authentication process.
+     * 
+     * @return accessToken The access token for the authenticated session
+     */
     @ConnectionIdentifier
     public String getAccessToken() {
         return (this.vantiq != null ? this.vantiq.getAccessToken() : null);
     }
-    
+
+    /**
+     * Returns if the connection is connected and authenticated.
+     * 
+     * @return true if the connection is valid and the authentication is valid.
+     */
     @ValidateConnection
     public boolean validateConnection() {
         return (this.vantiq != null && this.vantiq.isAuthenticated());
     }
     
+    /**
+     * Returns the Vantiq SDK instace.
+     * 
+     * @return Vantiq SDK instance
+     */
     public Vantiq getVantiq() {
         return this.vantiq;
     }
@@ -116,36 +154,42 @@ public class VantiqConnectionManagement {
     // Getters/Setters
     //--------------------------------------------------------------------------
         
+    /**
+     * Returns the server URL for the Vantiq system
+     * 
+     * @return The Vantiq server URL
+     */
     public String getServer() {
         return server;
     }
 
+    /**
+     * Sets the server URL for the Vantiq system
+     * 
+     * @param server The Vantiq server URL
+     */
     public void setServer(String server) {
         this.server = server;
     }
 
+    /**
+     * Returns the Vantiq topic that is used in Vantiq to handle 
+     * requests from Anypoint to import data into Vantiq.
+
+     * @return Vantiq topic
+     */
 	public String getTopic() {
         return topic;
     }
 
+    /**
+     * Sets the Vantiq topic that is used in Vantiq to handle 
+     * requests from Anypoint to import data into Vantiq.
+
+     * @param topic Vantiq topic
+     */
     public void setTopic(String topic) {
         this.topic = topic;
     }
 
-    public int getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(int apiVersion) {
-        this.apiVersion = apiVersion;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-	
 }

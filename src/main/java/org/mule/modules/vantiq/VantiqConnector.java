@@ -22,7 +22,7 @@
 package org.mule.modules.vantiq;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,9 +47,8 @@ import org.mule.modules.vantiq.error.VantiqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonElement;
 
 import io.vantiq.client.ResponseHandler;
 import io.vantiq.client.SubscriptionCallback;
@@ -61,8 +60,12 @@ import io.vantiq.client.VantiqResponse;
 import okhttp3.Response;
 
 /**
- * Vantiq Mule Connector that supports integration between Vantiq systems and Anypoint
- * systems.
+ * This connector that supports bi-directional integration between 
+ * Vantiq systems and MuleSoft Anypoint systems.
+ * 
+ * The connector uses the <a href="https://github.com/Vantiq/vantiq-sdk-java">Vantiq Java SDK</a>.
+ * Details of the SDK are documented in the 
+ * <a href="https://github.com/Vantiq/vantiq-sdk-java/blob/master/docs/api.md">API docs</a>.
  * 
  * @author Vantiq
  */
@@ -71,25 +74,34 @@ import okhttp3.Response;
 @OnException(handler=VantiqErrorHandler.class)
 public class VantiqConnector {
 
-    static Gson  gson = new Gson();
-    
     private static Logger log = LoggerFactory.getLogger(VantiqConnector.class); 
     
     @NotNull
     @Config
     private VantiqConnectionManagement connectionManagement;
     
+    /**
+     * The Vantiq SDK client instance that is the interface with the Vantiq
+     * system.
+     */
     private Vantiq vantiq;
-
-    //--------------------------------------------------------------------------
-    // DataSense
-    //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     // Sources
     //--------------------------------------------------------------------------
 
-    private void subscribe(String resource, 
+    /**
+     * A single entry point that creates a subscription to a specific resource
+     * in the currently connected Vantiq system.  The subscription is created
+     * by creating a WebSocket through the Vantiq SDK that listens for 
+     * event messages.
+     * 
+     * @param resource The Vantiq resource to listen.  Must be TOPICS, TYPES, or SOURCES. 
+     * @param id The unique ID for the specific resource instance to listen to
+     * @param op Only for TYPE events, the specific event type to subscribe to
+     * @param callback The callback to use on the arrival of the event
+     */
+    private void subscribe(Vantiq.SystemResources resource, 
                            String id,
                            TypeOperation op, 
                            final SourceCallback callback) {
@@ -98,8 +110,8 @@ public class VantiqConnector {
             path = resource + "/" + id;            
         } else {
             path = resource + "/" + id + "/" + op.toString().toLowerCase();
-        }
-        this.vantiq.subscribe(resource, id, op, new SubscriptionCallback() {
+        } 
+        this.vantiq.subscribe(resource.value(), id, op, new SubscriptionCallback() {
 
             @Override public void onConnect() {                
                 log.info("Subscription successful: " + path);
@@ -125,50 +137,75 @@ public class VantiqConnector {
     }
     
     /**
-     * Creates a source that generates messages from PUBLISH events in Vantiq on 
-     * a specific topic. 
+     * Creates a source for messages that arise from topic (i.e. publish) events
+     * occurring on the given Vantiq system.
      * 
-     * @param topic The publish topic to subscribe to (e.g. "/test/topic")
+     * A single message occurs for each event that occurs in Vantiq on the
+     * given topic.  The message will be the payload of the Vantiq event.
+     * 
+     * @param topic The topic of interest
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     public void subscribeTopic(String topic,
                                SourceCallback callback) {
-        this.subscribe(Vantiq.SystemResources.TOPICS.value(), topic, null, callback);
+        this.subscribe(Vantiq.SystemResources.TOPICS, topic, null, callback);
     }
 
     /**
-     * Creates a source that generates messages from TYPE events in Vantiq on 
-     * a specific type with a specific operation. 
+     * Creates a source for messages that arise from type events occurring on the
+     * given Vantiq system.  Type events occur when changes occur on a specific
+     * Vantiq data type.  This method creates a subscription for all type
+     * events for a given data type and type operation.  The possible operations
+     * are:
+     * <ul>
+     *   <li>INSERT: When a new record of the given type is created</li>
+     *   <li>UPDATE: When an existing record of the given type is changed</li>
+     *   <li>DELETE: When an existing record of the given type is removed</li>
+     * </ul> 
      * 
-     * @param dataType The Vantiq data type that will generate the events
-     * @param operation The type operation to listen to (i.e. "insert", "update", "delete")
+     * DataSense is used to query Vantiq for the available data types that
+     * are defined in the Vantiq system.
+     * 
+     * @param dataType The Vantiq data type
+     * @param operation The specific type operation
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     @UserDefinedMetaData
     public void subscribeType(@MetaDataKeyParam String dataType, 
                               TypeOperation operation,
                               SourceCallback callback) {
-        this.subscribe(Vantiq.SystemResources.TYPES.value(), dataType, operation, callback);
+        this.subscribe(Vantiq.SystemResources.TYPES, dataType, operation, callback);
     }
     
     /**
-     * Creates a source that generates messages from SOURCE events in Vantiq on 
-     * a specific Vantiq Source.
+     * Creates a source that generates messages that arise from messages that
+     * arrive on a specific Vantiq source.
      * 
-     * @param source The Vantiq source that will generate the events
-     * @param operation The type operation to listen to (i.e. "insert", "update", "delete")
+     * A single message is created for each message that arrives from the given
+     * Vantiq source.
+     * 
+     * @param source The Vantiq source
+     * @param operation The type operation
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     public void subscribeSource(String source,
                                 SourceCallback callback) {
-        this.subscribe(Vantiq.SystemResources.SOURCES.value(), source, null, callback);
+        this.subscribe(Vantiq.SystemResources.SOURCES, source, null, callback);
     }
         
     /**
-     * Performs a query into the Vantiq system and returns the results as
-     * messages.  The query has a default polling period of 30 seconds.
+     * Creates a source that polls the Vantiq system for messages that 
+     * result from a query.  The query matching criteria is defined
+     * by the where clause.  The syntax for the where is defined 
+     * in the <a href="https://dev.vantiq.com/docs/system/api/developer.html#-where-parameter">Vantiq developer documentation</a>.
+     * In addition, the select list may be provided to restrict the
+     * fields returned in each record.
      * 
-     * @param dataType The data type to query
+     * If no where clause is provided, then all records are returned.
+     * 
+     * If no selectList is provided, then all fields are returned.
+     *
+     * @param dataType The Vantiq data type to query
      * @param selectList The optional list of properties to return for each record
      * @param where The optional where clause to filter the data
      * @param callback Callback for the messages
@@ -209,29 +246,41 @@ public class VantiqConnector {
     //--------------------------------------------------------------------------
 
     /**
-     * Returns the list of actions that are supported within Vantiq and can be 
-     * the source for data within MuleSoft.
+     * Returns the list of control actions from the Vantiq system.  Control
+     * actions are messages that are triggered from within Vantiq that are
+     * targeted for a specific purpose on a 3rd party system.
      * 
      * @return List of supported actions
      * @throws VantiqException Thrown if an error occurs
      * @throws IOException If an network error occurs
      */
     @Processor
-    public List<Map<String,Object>> getSupportedActions() throws IOException {
-        VantiqResponse response = this.vantiq.execute("SystemAdapterControlActions", Collections.EMPTY_MAP);
+    public List<String> getSupportedActions() throws IOException {                
+        VantiqResponse response = this.vantiq.execute("Connector_GetControlActions", Collections.EMPTY_MAP);
         if(response.isSuccess()) {
-            Type resultType = new TypeToken<List<Map<String,Object>>>(){}.getType();
-            return gson.fromJson((JsonArray) response.getBody(), resultType);
+            List<String> result = new ArrayList<String>();
+            for(JsonElement element : (JsonArray) response.getBody()) {
+                result.add(element.getAsJsonObject().get("action").getAsString());
+            }
+            return result;
         } else {
             throw new VantiqException(response);
         }
     }
     
     /**
-     * Publishes data into the Vantiq system using the MuleSoft adapter
+     * Publishes data targeted for a specific Vantiq data type that
+     * is handled by a Vantiq adapter to import the data into the
+     * Vantiq system.
      * 
-     * @param dataType The name of the Vantiq data type to publish to
-     * @param payload The data to send to Vantiq
+     * The payload is a list of records where each record should 
+     * match the fields in the Vantiq data type.
+     * 
+     * DataSense is used to query Vantiq for the available data types that
+     * are defined in the Vantiq system.
+     * 
+     * @param dataType The target Vantiq data type
+     * @param payload The list of records to send
      * @return if the publish was successful
      * @throws VantiqException Thrown if an error occurs
      * @throws IOException If an network error occurs
@@ -258,10 +307,12 @@ public class VantiqConnector {
     }
     
     /**
-     * Publishes to a specific topic in Vantiq.
+     * Publishes data to Vantiq on a specific Vantiq topic as an ad-hoc means for pushing
+     * data into Vantiq.  To handle the data in Vantiq, a rule should exist that listens on
+     * the given topic.  The payload is transformed to JSON using GSON. 
      * 
-     * @param topic The name of the topic to publish to (e.g. "/test/topic")
-     * @param payload The content of the publish event.  Note this will be transformed to JSON using GSON.
+     * @param topic The name of the topic (e.g. "/my/topic")
+     * @param payload The content of the publish event.
      * 
      * @return if the publish was successful
      */
@@ -281,14 +332,25 @@ public class VantiqConnector {
     // Getters/Setters
     //--------------------------------------------------------------------------
     
+    /**
+     * Returns the connection management instance that is responsible for establishing 
+     * and authenticating the connection
+     * 
+     * @return The connection management instance
+     */
     public VantiqConnectionManagement getConnectionManagement() {
         return connectionManagement;
     }
 
+    /**
+     * Sets the connection management instance that is responsible for establishing 
+     * and authenticating the connection
+     * 
+     * @param connectionManagement The connection management instance
+     */
     public void setConnectionManagement(VantiqConnectionManagement connectionManagement) {
         this.connectionManagement = connectionManagement;
         this.vantiq = this.connectionManagement.getVantiq();
     }
-
 
 }

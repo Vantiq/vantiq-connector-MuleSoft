@@ -23,6 +23,7 @@ package org.mule.modules.vantiq.automation.functional;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -38,10 +39,12 @@ import org.mule.common.metadata.MetaData;
 import org.mule.common.metadata.MetaDataKey;
 import org.mule.modules.vantiq.VantiqConnector;
 import org.mule.tools.devkit.ctf.junit.AbstractTestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     
-//    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ProcessorIntgTestCases() {
         super(VantiqConnector.class);
@@ -49,8 +52,9 @@ public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     
     @Test
     public void verifyGetSupportedActions() throws Exception {
-        List<Map<String,Object>> actions = getConnector().getSupportedActions();
+        List<String> actions = getConnector().getSupportedActions();
         assertThat("Got actions", actions.size(), greaterThan(0));
+        assertThat("Has create tweet action", actions, hasItem("Twitter_PostTweet"));
     }
     
     @Test
