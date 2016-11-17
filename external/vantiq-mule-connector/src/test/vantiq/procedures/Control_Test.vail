@@ -1,0 +1,5 @@
+PROCEDURE Control_Test
+
+// Dummy procedure to test supported actions from the Vantiq connector
+
+return { status: true }

@@ -12,16 +12,25 @@ The Vantiq connector supports the followings means for publishing data from Anyp
 
 The `publishData` processor allows well defined data types to be published into Vantiq.
 The data types must be pre-defined within Vantiq that matches the data being pushed.  These
-pre-defined types are generally available through *Vantiq Adapters*.
-
-DataSense is supported that provides metadata of the Vantiq data types into Anypoint.  The data published into Vantiq is handled by the *MuleSoft Connector* in Vantiq and initiates the
+pre-defined types are generally available through *Vantiq Adapters*.  The data published 
+into Vantiq is handled by the Vantiq side of the *MuleSoft Connector* and initiates the
 appropriate *Vantiq Adapter* associated with the given data type.
+
+DataSense is supported that provides metadata of the Vantiq data types into Anypoint.
 
 ### `publishTopic`
 
 To publish ad-hoc data into Vantiq, the `publishTopic` processor provides the means for 
 triggering an event in Vantiq on a given topic.  Rules within Vantiq may be used to listen
 for the given event.
+
+### `insertData`
+
+The `insertData` processor inserts data directly into a Vantiq data type without
+going through a *Vantiq Adapter* to transform the data.  All fields must match the
+required data formats expected by Vantiq.
+
+DataSense is supported that provides metadata of the Vantiq data types into Anypoint.
 
 ## Sources
 

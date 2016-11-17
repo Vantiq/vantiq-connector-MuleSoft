@@ -26,6 +26,21 @@
      </vantiq:publish-data>
    </flow>  
 <!-- END_INCLUDE(vantiq:publish-data) -->
+<!-- BEGIN_INCLUDE(vantiq:insert-data) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+     <vantiq:insert-data config-ref="config" dataType="MyType">
+       <vantiq:payload ref="#[flowVars.payload]"/>
+     </vantiq:insert-data>
+   </flow>  
+<!-- END_INCLUDE(vantiq:insert-data) -->
 <!-- BEGIN_INCLUDE(vantiq:publish-topic) -->
    <vantiq:config doc:name="config"
                   name="config"

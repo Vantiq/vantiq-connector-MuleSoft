@@ -244,16 +244,13 @@ public class VantiqConnector {
      */
     @Processor
     public List<String> getSupportedActions() throws IOException {                
-        VantiqResponse response = getVantiq().execute("Connector_GetControlActions", Collections.emptyMap());
-        if(response.isSuccess()) {
-            List<String> result = new ArrayList<String>();
-            for(JsonElement element : (JsonArray) response.getBody()) {
-                result.add(element.getAsJsonObject().get("action").getAsString());
-            }
-            return result;
-        } else {
-            throw new VantiqException(response);
+        VantiqResponse resp = checkResponse(getVantiq().execute("Connector_GetControlActions", Collections.emptyMap()));
+
+        List<String> result = new ArrayList<String>();
+        for(JsonElement element : (JsonArray) resp.getBody()) {
+            result.add(element.getAsJsonObject().get("action").getAsString());
         }
+        return result;
     }
     
     /**
@@ -306,10 +303,7 @@ public class VantiqConnector {
     @Processor
     public void publishTopic(String topic,
                              @Default("#[payload]") final Object payload) throws IOException {
-        VantiqResponse response = getVantiq().publish(Vantiq.SystemResources.TOPICS.value(), topic, payload);        
-        if(!response.isSuccess()) {
-            throw new VantiqException(response);
-        }
+        checkResponse(getVantiq().publish(Vantiq.SystemResources.TOPICS.value(), topic, payload)); 
     }
 
     /**
@@ -324,10 +318,20 @@ public class VantiqConnector {
     @Processor 
     public void insertData(@MetaDataKeyParam final String dataType,
                            @Default("#[payload]") final Map<String,Object> payload) throws IOException {
-        VantiqResponse response = getVantiq().insert(dataType, payload);
+        checkResponse(getVantiq().insert(dataType, payload));
+    }
+    
+    /**
+     * Throws an exception if the response was not successful.  Otherwise, this is a no-op.
+     * 
+     * @param response
+     * @throws VantiqException if the response failed
+     */
+    private VantiqResponse checkResponse(VantiqResponse response) {
         if(!response.isSuccess()) {
             throw new VantiqException(response);
         }
+        return response;
     }
     
     //--------------------------------------------------------------------------

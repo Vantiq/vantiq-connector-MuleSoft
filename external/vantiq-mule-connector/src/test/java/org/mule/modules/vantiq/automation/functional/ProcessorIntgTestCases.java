@@ -24,6 +24,7 @@ package org.mule.modules.vantiq.automation.functional;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,13 +44,22 @@ import org.mule.common.metadata.datatype.DataType;
 import org.mule.modules.vantiq.VantiqConnector;
 import org.mule.modules.vantiq.VantiqDataSenseResolver;
 import org.mule.tools.devkit.ctf.junit.AbstractTestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * Processor integration tests.
+ * 
+ * Note: These tests assume that the Vantiq artifacts in the "src/test/vantiq"
+ * are loaded into the Vantiq server.
+ */
 public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     
     private static final Gson gson = new Gson();
+    private final static Logger log = LoggerFactory.getLogger(ProcessorIntgTestCases.class);
 
     public ProcessorIntgTestCases() {
         super(VantiqConnector.class);
@@ -88,10 +98,8 @@ public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     @Test
     public void verifyGetSupportedActions() throws Exception {
         List<String> actions = getConnector().getSupportedActions();
-        
-        // We don't expect any actions, we just want to make sure there was
-        // error querying for the list of supported actions
         assertThat("Got actions", actions, not(nullValue()));
+        assertThat("Found 'Test' action", actions, hasItem("Test"));
     }
     
     @Test
@@ -99,27 +107,43 @@ public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
         String dataType = "TestType";
         Map<String,Object> payload = new HashMap<String,Object>();
         payload.put("id", "abc");
-        payload.put("x", "def");
+        payload.put("x", 3.14159);
         List<Map<String,Object>> payloadList = new ArrayList<Map<String,Object>>();
         payloadList.add(payload);
 
         // Note that failure would throw an exception
         getConnector().publishData(dataType, payloadList);
     }
-    
+
+    @Test
+    public void verifyInsertData() throws Exception {
+        String dataType = "TestType";
+        Map<String,Object> payload = new HashMap<String,Object>();
+        payload.put("id", "abc");
+        payload.put("x", 3.14159);
+
+        // Note that failure would throw an exception
+        getConnector().insertData(dataType, payload);
+    }
+
     @Test
     public void verifyMetaDataKeys() throws Exception {
         List<MetaDataKey> result = getDispatcher().fetchMetaDataKeys().get();
         assertThat("At least one metadata type", result, not(empty()));
         
+        boolean match = false;
         for(MetaDataKey key : result) {
             if("TestType".equals(key.getId())) {
                 MetaData md = getDispatcher().fetchMetaData(key).get();
                 DefinedMapMetaDataModel model = (DefinedMapMetaDataModel) md.getPayload();
                 assertThat("Non-empty set of metadata properties", model.getKeys(), not(empty()));
+                
+                match = true;
                 break;
             }
         }
+        
+        assertThat("Found TestType", match, is(true));
     }
     
     @Test
