@@ -51,3 +51,6 @@ buildNumber.properties
 # Gradle
 .gradle/
 build/
+
+# Remove automation credentials for unit tests
+automation-credentials.properties

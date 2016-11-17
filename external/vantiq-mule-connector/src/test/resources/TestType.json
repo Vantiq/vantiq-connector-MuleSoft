@@ -1,0 +1,16 @@
+{
+    "name": "TestType",
+    "properties": {
+        "aString":    { "type": "String"   },
+        "aDateTime":  { "type": "DateTime" },
+        "aInteger":   { "type": "Integer"  },
+        "aReal":      { "type": "Real"     },
+        "aDecimal":   { "type": "Decimal"  },
+        "anObject":   { "type": "Object"   },
+        "aGeoJSON":   { "type": "GeoJSON"  },
+        "aBoolean":   { "type": "Boolean"  },
+        "aCurrency":  { "type": "Currency" },
+        "aWrongType": { "type": "Dummy"    },
+        "sysField":   { "type": "String",  "system": true }
+    }
+}

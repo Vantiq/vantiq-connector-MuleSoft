@@ -1,0 +1,15 @@
+RULE SystemAdapter_MuleSoft_Inbound
+
+WHEN PUBLISH OCCURS ON "/system/adapter/MuleSoft/inbound" AS m
+
+// Mappers follow pattern of "/system/data/<dataType>".  E.g., "/system/data/TwitterTweet"
+var dataType = m.newValue.type
+var mapperTopic = "/system/data/" + dataType
+
+// Content from MuleSoft is already in JSON format
+var objArray = m.newValue.content
+
+// Content is an array, so we loop over each entry
+for(obj in objArray) {
+    PUBLISH obj TO TOPIC @mapperTopic    
+}

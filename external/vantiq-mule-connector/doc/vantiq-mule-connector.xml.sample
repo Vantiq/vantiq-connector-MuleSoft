@@ -1,0 +1,93 @@
+<!-- BEGIN_INCLUDE(vantiq:get-supported-actions) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+   
+   <flow name="my-flow">
+     <vantiq:get-supported-actions config-ref="config"/>
+   </flow>  
+<!-- END_INCLUDE(vantiq:get-supported-actions) -->
+<!-- BEGIN_INCLUDE(vantiq:publish-data) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+     <vantiq:publish-data config-ref="config" dataType="MyType">
+       <vantiq:payload ref="#[flowVars.payload]"/>
+     </vantiq:publish-data>
+   </flow>  
+<!-- END_INCLUDE(vantiq:publish-data) -->
+<!-- BEGIN_INCLUDE(vantiq:publish-topic) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+     <vantiq:publish-topic config-ref="config" topic="/my/topic">
+       <vantiq:payload ref="#[flowVars.payload]"/>
+     </vantiq:publish-topic>
+   </flow>  
+<!-- END_INCLUDE(vantiq:publish-topic) -->
+<!-- BEGIN_INCLUDE(vantiq:select-data) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+      <vantiq:select-data config-ref="config" dataType="MyType">
+      	<vantiq:select-list>
+           <vantiq:select-list value-ref="x"/>
+           <vantiq:select-list value-ref="y"/>
+           <vantiq:select-list value-ref="z"/>
+      	</vantiq:select-list>
+      	<vantiq:where>
+          <vantiq:where key="x" value-ref="5"/>
+      	</vantiq:where/>
+      <processor ref="my-downstream-processor"/>
+   </flow>
+<!-- END_INCLUDE(vantiq:select-data) -->
+<!-- BEGIN_INCLUDE(vantiq:subscribe-topic) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+      <vantiq:subscribe-topic config-ref="config" topic="/test/topic"/>
+      <processor ref="my-downstream-processor"/>
+   </flow>
+<!-- END_INCLUDE(vantiq:subscribe-topic) -->
+<!-- BEGIN_INCLUDE(vantiq:subscribe-type) -->
+   <vantiq:config doc:name="config"
+                  name="config"
+                  server="https://dev.vantiq.com"
+                  username="my-vantiq-username"
+                  password="my-vantiq-password">
+      <reconnect/>
+   </vantiq:config>
+
+   <flow name="my-flow">
+      <vantiq:subscribe-type config-ref="config" dataType="MyType" operation="INSERT"/>
+      <processor ref="my-downstream-processor"/>
+   </flow>
+<!-- END_INCLUDE(vantiq:subscribe-type) -->
