@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>vantiq-mule-connector</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>mule-module</packaging>
     <name>Vantiq Anypoint Connector</name>
 
@@ -23,7 +23,7 @@
 		<dependency>
         	<groupId>io.vantiq</groupId>
         	<artifactId>vantiq-sdk</artifactId>
-        	<version>1.0.10</version>
+        	<version>1.0.12</version>
 	        <scope>compile</scope>
 	    </dependency>
 		<dependency>

@@ -22,9 +22,9 @@
 package org.mule.modules.vantiq.automation.functional;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -44,8 +44,6 @@ import org.mule.common.metadata.datatype.DataType;
 import org.mule.modules.vantiq.VantiqConnector;
 import org.mule.modules.vantiq.VantiqDataSenseResolver;
 import org.mule.tools.devkit.ctf.junit.AbstractTestCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -59,7 +57,6 @@ import com.google.gson.JsonObject;
 public class ProcessorIntgTestCases extends AbstractTestCase<VantiqConnector> {
     
     private static final Gson gson = new Gson();
-    private final static Logger log = LoggerFactory.getLogger(ProcessorIntgTestCases.class);
 
     public ProcessorIntgTestCases() {
         super(VantiqConnector.class);

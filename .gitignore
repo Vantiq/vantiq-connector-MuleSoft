@@ -54,3 +54,6 @@ build/
 
 # Remove automation credentials for unit tests
 automation-credentials.properties
+
+# MuleSoft
+**/catalog/

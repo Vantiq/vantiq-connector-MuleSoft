@@ -59,6 +59,7 @@ public class SubscribeTopicTestCases extends AbstractTestCase<VantiqConnector> {
     @Test
     @SuppressWarnings("unchecked")
     public void testSubscribeTopic() throws Throwable {
+
         //
         // Publish a number of messages to the topic and see that the subscription was able to read it
         //

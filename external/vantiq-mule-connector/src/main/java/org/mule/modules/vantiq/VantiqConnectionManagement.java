@@ -73,6 +73,30 @@ public class VantiqConnectionManagement {
     @Default("/system/connector/MuleSoft/inbound")
     private String topic;
     
+    /**
+     * The read timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     */
+    @Configurable
+    @Default("0")
+    private long readTimeout;
+    
+    /**
+     * The write timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     */
+    @Configurable
+    @Default("0")
+    private long writeTimeout;
+    
+    /**
+     * The connect timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     */
+    @Configurable
+    @Default("0")
+    private long connectTimeout;
+    
     //--------------------------------------------------------------------------
     // Connection Management Methods
     //--------------------------------------------------------------------------    
@@ -93,8 +117,18 @@ public class VantiqConnectionManagement {
     @TestConnectivity
     public void connect(@ConnectionKey String username, @Password String password) throws ConnectionException {
         this.vantiq = new Vantiq(this.server);
+        this.vantiq.setReadTimeout(this.readTimeout);
+        this.vantiq.setWriteTimeout(this.writeTimeout);
+        this.vantiq.setConnectTimeout(this.connectTimeout);
         checkAuthenticateResponse(this.vantiq.authenticate(username, password));
         log.info("User '" + username + "' authenticated.");
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Vantiq timeout settings:\n");
+        sb.append("  Read Timeout:    ").append(this.readTimeout).append(" ms\n");
+        sb.append("  Write Timeout:   ").append(this.writeTimeout).append(" ms\n");
+        sb.append("  Connect Timeout: ").append(this.connectTimeout).append(" ms\n");
+        log.debug(sb.toString());
     }
     
     /**
@@ -193,6 +227,66 @@ public class VantiqConnectionManagement {
      */
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+    
+    /**
+     * Returns the read timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @return The read timeout in milliseconds
+     */    
+    public long getReadTimeout() {
+        return readTimeout;
+    }
+
+    /**
+     * Sets the read timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @param readTimeout The timeout duration in milliseconds
+     */
+    public void setReadTimeout(long readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    /**
+     * Returns the write timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @return The write timeout in milliseconds
+     */    
+    public long getWriteTimeout() {
+        return writeTimeout;
+    }
+
+    /**
+     * Sets the write timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @param writeTimeout The timeout duration in milliseconds
+     */
+    public void setWriteTimeout(long writeTimeout) {
+        this.writeTimeout = writeTimeout;
+    }
+
+    /**
+     * Returns the connect timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @return The connect timeout in milliseconds
+     */    
+    public long getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
+     * Sets the connect timeout for connections to the Vantiq server in
+     * milliseconds.  A value of 0 means no timeout.
+     * 
+     * @param connectTimeout The timeout duration in milliseconds
+     */
+    public void setConnectTimeout(long connectTimeout) {
+        this.connectTimeout = connectTimeout;
     }
 
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:vantiq="http://www.mulesoft.org/schema/mule/vantiq" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vantiq http://www.mulesoft.org/schema/mule/vantiq/current/mule-vantiq.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <vantiq:config name="Vantiq_Mule_Cert" username="mule_certification_admin" password="Mul3C3rt!" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
+    <flow name="demo-roundtripFlow">
+        <vantiq:subscribe-type config-ref="Vantiq_Mule_Cert" dataType="TestType" operation="INSERT" doc:name="Vantiq (Streaming)"/>
+        <vantiq:publish-topic config-ref="Vantiq_Mule_Cert" topic="/test/topic" doc:name="Vantiq"/>
+    </flow>
+</mule>
