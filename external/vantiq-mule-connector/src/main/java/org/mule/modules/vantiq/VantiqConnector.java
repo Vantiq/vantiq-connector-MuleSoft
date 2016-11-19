@@ -202,6 +202,19 @@ public class VantiqConnector {
                               SourceCallback callback) {
         this.subscribe(Vantiq.SystemResources.TYPES, dataType, operation, callback);
     }
+    
+    /**
+     * Creates a source for actions on the given Vantiq system.  This method
+     * creates a subscription that listens for the action events.  The supported
+     * actions can be gotten by the getSupportedAction processor.
+     */
+    @Source(sourceStrategy = SourceStrategy.NONE)
+    public void subscribeAction(String action,
+                                SourceCallback callback) {
+        // Actions are simply translated to the adapter topic to subscribe to
+        String topic = "/system/adapter/outbound/" + action;
+        this.subscribeTopic(topic, callback);
+    }
   
     /**
      * Creates a source that polls the Vantiq system for messages that 

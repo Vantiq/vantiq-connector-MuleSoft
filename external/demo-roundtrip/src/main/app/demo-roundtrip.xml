@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:vantiq="http://www.mulesoft.org/schema/mule/vantiq" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:vantiq="http://www.mulesoft.org/schema/mule/vantiq" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/vantiq http://www.mulesoft.org/schema/mule/vantiq/current/mule-vantiq.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-    <vantiq:config name="Vantiq_Mule_Cert" username="mule_certification_admin" password="Mul3C3rt!" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+    <vantiq:config name="Vantiq_Mule_Cert" username="mule_certification_admin" password="" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
     <flow name="demo-roundtripFlow">
-        <vantiq:subscribe-type config-ref="Vantiq_Mule_Cert" dataType="TestType" operation="INSERT" doc:name="Vantiq (Streaming)"/>
-        <vantiq:publish-topic config-ref="Vantiq_Mule_Cert" topic="/test/topic" doc:name="Vantiq"/>
+        <vantiq:subscribe-action config-ref="Vantiq_Mule_Cert"   doc:name="Vantiq (Streaming)" action="MuleDemo_TriggerMessage"/>
+        <logger message="Input Payload: &quot;#[payload]&quot;" level="INFO" doc:name="Logger"/>
+        <splitter expression="#[payload.value.payload]" doc:name="Splitter"/>
+        <set-payload value="#[['id': &quot;ID-&quot; + new Date(), 'msg': payload.msg, 'value': (int) payload.value ]]" doc:name="Set Payload"/>
+        <logger message="Loop Payload To Augment: &quot;#[payload]&quot;" level="INFO" doc:name="Logger"/>
+        <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
+        <logger message="Payload to Publish: &quot;#[payload]&quot;" level="INFO" doc:name="Logger"/>
+        <vantiq:publish-data config-ref="Vantiq_Mule_Cert" dataType="MuleDemo_TargetType" doc:name="Vantiq">
+            <vantiq:payload ref="#[payload]"/>
+        </vantiq:publish-data>
     </flow>
 </mule>
