@@ -1,0 +1,96 @@
+////
+The following is the approved connector release notes template for documenting MuleSoft Supported Connectors.
+////
+
+= Vantiq Connector Release Notes
+////
+[Vantiq: The system the connector connects to, at the other end of the mule runtime, i.e. SalesForce, Workday Financials]
+////
+:keywords: Vantiq
+
+The Vantiq Connector provides support for bi-directional communication between 3rd party systems and 
+Vantiq through MuleSoft Anypoint.
+
+link:/Vantiq-connector[Vantiq Connector User Guide]
+////
+Points to the docs.mulesoft pages for documentation on the functional aspects of the connector. e.g.: link:/mule-user-guide/v/3.7/microsoft-sharepoint-2013-connector[Microsoft SharePoint 2013 Connector]
+////
+
+== 1.0.2 - 11/21/2016
+////
+<Connector_Version> : Describes the connector version, such as “V2013”, “V4.0”, “V4.0.1-HF2” or whatever used for release]
+<Release_date> : The date on which the connector is released (not when the notes are written, mind you)
+////
+
+=== Version 1.0.2 Compatibility
+
+[width="100%", cols=",", options="header"]
+|===
+|Software |Version
+|Mule Runtime |3.6.0 +
+|Vantiq | Server 1.7.0+
+|===
+
+=== Migrating from Older Versions
+////
+optional
+If you’re currently using connector <old_connector_version> to migrate to this connector you need to:
+
+- <step_1>
+- <step_2>
+
+If you’re currently using a connector version <old_connector_version_2> this connector is not compatible. Don’t upgrade to this connector unless you are sure you do the following:
+
+- <step_3>
+- <step_4>
+
+<Step_1 to N should be clear instructions that pertain to the migration path from one connector to the other.
+////
+
+//Examples might include
+
+//- Specifying which version of the runtime is needed for the new connector
+//- Changes in the version of the connected systems to be able to work
+//- When the connector suffers structural changes (i.e monolythic connectors now many update sites) we should also inform the split and why and how to update from one to //the other.
+//- Specific instructions if the connector is running in CloudHub (like changing the Mule Runtime version, etc)
+//- The first list of steps is for in-place upgrades, probably just updating via Maven or  Anypoint Studio  and re deploying.
+//- The second list is for the connectors that are older and require additional steps.
+//- Some of this might not apply (i.e. a connector is backwards compatible with all released versions or there is no previous version)
+
+
+=== Features
+
+. Publishing Data - Ability to publish data into specific Vantiq data types
+. Publishing Messages - Ability to publish messages to Vantiq rules
+. Subscribing to specific actions - Ability to trigger messages from Vantiq actions
+. Subscribing to events - Ability to trigger messages from Vantiq type and topic events
+. Subscribing to query - Ability to trigger messages from Vantiq based on query
+. DataSense Support - Populates metadata from Vantiq data types
+
+=== 1.0.2 Fixed in this Release
+
+//- <Bug_Title> - <Conditions under which the bug used to happen, explain which was the result, which is now the fixed result>
+
+//Example of a Bug listing:
+
+//- Asyncronous processing now works when invoking via an External interface - Previously, when invoking an asyncronous service, the call could end up in a deadlock unless //lock(object) was used. Now, the connector locks automatically and you don’t need to do it.
+
+//Example of what is NOT A BUG listing
+
+//- Fixed CLDCONNECT-XYZ (because projects are not public)
+//- Functional tests XYZ now work (because functional testing or any other part of the development process is not visible to customers)
+//- Increased Sonar coverage (ditto)
+//- Resolved NPE (lacking information like scenarios under which it can be reproduced, what is NPE, etc)
+
+=== 1.0.2 Known Issues
+
+No known issues.
+
+=== Support Resources
+////
+could also be named See Also
+////
+
+* link:https://dev.vantiq.com/docs/system/api/index.html[Vantiq Documentation]
+* link:mailto:support@vantiq.com[Vantiq Support]
+* link:https://github.com/Vantiq/vantiq-connector-MuleSoft[Vantiq Connector GitHub]
