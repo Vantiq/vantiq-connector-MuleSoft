@@ -1,3 +1,10 @@
+# About MuleSoft Certified Connectors
+
+MuleSoft Certified Connectors are developed by MuleSoft’s partners and developer community. These connectors have been reviewed and certified by MuleSoft. To purchase the Vantiq Connector, if required, or to receive assistance or support for it, please contact Vantiq directly at support@vantiq.com. MuleSoft disclaims any support obligation for MuleSoft Certified Connectors.
+By installing this connector, you consent to MuleSoft sharing your contact information with the developer of this connector so that you can receive more information about it directly from the developer.
+
+# Vantiq License
+
 Copyright (c) 2016 Vantiq, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
