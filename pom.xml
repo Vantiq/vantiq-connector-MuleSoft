@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!--
+        This POM is required for the MuleSoft CloudBees CI process
+        that assumes the repo supports Maven at the root level.  This POM
+        effectively delegates the build down to the vantiq-mule-connector
+        directory.
+      -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>vantiq-mule-connector-parent</artifactId>

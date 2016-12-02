@@ -17,14 +17,14 @@ actions associated with the services exposed through MuleSoft.
 
 This connector consists of the following:
 
-- [Vantiq Anypoint Connector](../../tree/master/external/vantiq-mule-connector) that
+- [Vantiq Anypoint Connector](external/vantiq-mule-connector) that
 provides the MuleSoft Anypoint side of the integration that allows Vantiq to participate in the 
 Anypoint flows.
-- [MuleSoft Connector](../../tree/master/vantiq) that provides support for the Vantiq side of the connector.
+- [MuleSoft Connector](vantiq) that provides support for the Vantiq side of the connector.
 
 ### Vantiq Anypoint Connector
 
-See the [Vantiq Anypoint Connector README](./blob/master/external/vantiq-mule-connector/README.md) on installation and execution details.
+See the [Vantiq Anypoint Connector README](external/vantiq-mule-connector/README.md) on installation and execution details.
 
 ### MuleSoft Connector
 
