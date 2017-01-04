@@ -83,7 +83,7 @@ public class VantiqDataSenseResolver {
         List<MetaDataKey> keys = new ArrayList<MetaDataKey>();
 
         for(JsonObject entry : (List<JsonObject>) response.getBody()) {
-            String typeName = ((JsonObject) entry).get("name").getAsString();
+            String typeName = entry.get("name").getAsString();
             keys.add(new DefaultMetaDataKey(typeName, typeName));
         }
 

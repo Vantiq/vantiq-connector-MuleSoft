@@ -170,6 +170,7 @@ public class VantiqConnector {
      * given topic.  The message will be the payload of the Vantiq event.
      * 
      * @param topic The topic of interest
+     * @param callback The callback to use on the arrival of the event
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     public void subscribeTopic(String topic,
@@ -194,6 +195,7 @@ public class VantiqConnector {
      * 
      * @param dataType The Vantiq data type
      * @param operation The specific type operation
+     * @param callback The callback to use on the arrival of the event
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     @UserDefinedMetaData
@@ -207,6 +209,9 @@ public class VantiqConnector {
      * Creates a source for actions on the given Vantiq system.  This method
      * creates a subscription that listens for the action events.  The supported
      * actions can be gotten by the getSupportedAction processor.
+     * 
+     * @param action The specific operation to subscribe to (i.e: insert)
+     * @param callback The callback to use on the arrival of the event
      */
     @Source(sourceStrategy = SourceStrategy.NONE)
     public void subscribeAction(String action,
