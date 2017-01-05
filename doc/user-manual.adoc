@@ -1,25 +1,49 @@
-= Vantiq MuleSoft Connector
+////
+The following is the approved connector user guide template for documenting MuleSoft Supported Connectors.
+////
+
+= Vantiq Connector
+:keywords: Vantiq,vantiq
+:imagesdir: ./_images
+:toc: macro
+:toclevels: 2
+////
+Image names follow "image:". Identify images using the connector name, preferably without the word "connector"
+URLs should always follow "link:"
+////
+
+// Dropdown for Connector Version
+//  Children: Technical Reference / Demos
+
+toc::[]
+
+
+== Introduction
 
 The http://www.vantiq.com[Vantiq] https://www.mulesoft.com/[MuleSoft] connector provides bi-directional communication between Vantiq and the services exposed through MuleSoft.
+//Global rule: the word "connector" should be lower case except when appearing in titles, important URL anchors, and after a MuleSoft tradename such as "Anypoint".
 
-== Dependencies
+Read through this user guide to understand how to set up and configure a basic flow using the connector. Track feature additions, compatibility, limitations and API version updates with each release of the connector using the link:/release-notes/vantiq-connector-release-notes[Connector Release Notes]. Review the connector operations and functionality using the link:https://github.com/Vantiq/vantiq-connector-MuleSoft/tree/release/1.0.3[ Technical Reference] alongside the link:https://www.mulesoft.com/exchange#!/?filters=Vantiq&sortBy=rank[demo applications].
 
-- [Vantiq connector common](https://github.com/Vantiq/vantiq-connector-common)
 
-Note: The MuleSoft connector itself provides connectivity between Vantiq and MuleSoft. One or more adapters are required that define the specific data types and control actions associated with the services exposed through MuleSoft.
+== Prerequisites
 
-== Install
+This document assumes that you are familiar with Mule,
+link:/mule-user-guide/v/3.8/anypoint-connectors[Anypoint Connectors], and
+link:/mule-fundamentals/v/3.8/anypoint-studio-essentials[Anypoint Studio Essentials]. To increase your familiarity with Studio, consider completing a link:/mule-fundamentals/v/3.8/basic-studio-tutorial[Anypoint Studio Tutorial]. This page requires some basic knowledge of link:/mule-fundamentals/v/3.8/mule-concepts[Mule Concepts], link:/mule-fundamentals/v/3.8/elements-in-a-mule-flow[Elements in a Mule Flow], and link:/mule-fundamentals/v/3.8/global-elements[Global Elements].
 
-This connector consists of the following:
+
+[[requirements]]
+=== Hardware and Software Requirements
+
+[NOTE] The MuleSoft connector itself provides connectivity between Vantiq and MuleSoft. One or more adapters are required that define the specific data types and control actions associated with the services exposed through MuleSoft.
+
+For mule hardware and software requirements, please visit the link:/mule-user-guide/v/3.8/hardware-and-software-requirements[Hardware and Software Requirements] page.
+
+The Vantiq connector consists of the following 2 pieces, both of which are required for integrating Vantiq with Mule:
 
 * Vantiq Anypoint Connector that provides the MuleSoft Anypoint side of the integration that allows Vantiq to participate in the Anypoint flows.
-* MuleSoft Connector that provides support for the Vantiq side of the connector in the form of a Vantiq Rule. More information on Vantiq adapters and connectors is available https://dev.vantiq.com/docs/system/integration/overview/index.html#vantiq-adapters-and-connectors[here].
-
-=== Vantiq Anypoint Connector
-
-See the link:../README.md[Vantiq Anypoint Connector README] on installation and execution details.
-
-=== MuleSoft Connector
+* MuleSoft connector that provides support for the Vantiq side of the connector in the form of a Vantiq Rule. More information on Vantiq adapters and connectors is available https://dev.vantiq.com/docs/system/integration/overview/index.html#vantiq-adapters-and-connectors[here].
 
 The MuleSoft connector can be imported into a Vantiq namespace using the https://github.com/Vantiq/vantiq-connector-common[Vantiq connector common] `vantiq-import-adapter.sh` script:
 
@@ -33,10 +57,114 @@ Or directly using the CLI:
 
 where `<profile>` provides the credentials for the Vantiq CLI.
 
-=== Vantiq Connector Demo
+=== Compatibility
 
-To see the Vantiq Mulesoft Connector in action try the demo flow in link:../demo/demo-roundtrip[demo-roundtrip] to see the passage of data from Vantiq, to MuleSoft and back in a simple flow.
+The Vantiq connector is designed to work with the most recent version of the Vantiq server (currently at 1.11), but is compatible with all versions back to 1.0 provided the required rules are created in the connected Vantiq system.
 
-= Copyright and License
+== Installing the Connector
 
-Copyright &copy; 2016 Vantiq, Inc.  Code released under the [MIT License](./LICENSE)
+You can install the connector in Anypoint Studio using the instructions in
+link:/mule-fundamentals/v/3.8/anypoint-exchange#installing-a-connector-from-anypoint-exchange[Installing a Connector from Anypoint Exchange].
+
+For more information see the https://github.com/Vantiq/vantiq-connector-MuleSoft/blob/release/1.0.3/README.md[Vantiq Anypoint Connector README] on installation and execution details.
+
+=== Upgrading from an Older Version
+
+If you’re currently using an older version of the connector, a small popup appears in the bottom right corner of Anypoint Studio with an "Updates Available" message.
+
+. Click the popup and check for available updates. 
+. Click the Connector version checkbox and click *Next* and follow the instructions provided by the user interface. 
+. *Restart* Studio when prompted. 
+. After restarting, when creating a flow and using the connector, if you have several versions of the connector installed, you may be asked which version you would like to use. Choose the version you would like to use.
+
+Additionally, we recommend that you keep Studio up to date with its latest version.
+
+== Configuring the Connector Global Element
+
+To use the Vantiq connector in your Mule application, you must configure a global Vantiq element that can be used by the Vantiq connector (read more about  link:/mule-fundamentals/v/3.8/global-elements[Global Elements]). The Vantiq connector offers the following global configuration(s), requiring the following credentials: *Username*, *Password*, and *Server*.
+
+[width="100a",cols="50a,50a",options="header",]
+|===
+|Field |Description
+|*Username* |Enter the username to log into a Vantiq Namespace.
+|*Password* |Enter the corresponding password.
+|*Server*   |Enter the Vantiq server URL (ie: https://dev.vantiq.com).
+
+|===
+
+//image:Vantiq-global-element-props.png[Vantiq-config]
+
+== Using the Connector
+
+// This note should link to the generated javadocs, but I don't know where those end up
+//[NOTE]
+//See a full list of operations for any version of the connector link:[here].
+
+=== Connector Namespace and Schema
+
+When designing your application in Studio, the act of dragging the connector from the palette onto the Anypoint Studio canvas should automatically populate the XML code with the connector *namespace* and *schema location*.
+
+*Namespace:* `http://www.mulesoft.org/schema/mule/connector`
+*Schema Location:* `http://www.mulesoft.org/schema/mule/connector/current/mule-connector.xsd`
+
+[TIP]
+If you are manually coding the Mule application in Studio's XML editor or other text editor, define the namespace and schema location in the header of your *Configuration XML*, inside the `<mule>` tag.
+
+[source, xml,linenums]
+----
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:connector="http://www.mulesoft.org/schema/mule/connector"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core
+               http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/connector
+               http://www.mulesoft.org/schema/mule/connector/current/mule-connector.xsd">
+
+      <!-- put your global configuration elements and flows here -->
+
+</mule>
+----
+
+
+=== Using the Connector in a Mavenized Mule App
+
+If you are coding a Mavenized Mule application, this XML snippet must be included in your `pom.xml` file.
+
+[source,xml,linenums]
+----
+<dependency>
+  <groupId>org.mule.modules</groupId>
+  <artifactId>vantiq-mule-connector</artifactId>
+  <version>RELEASE</version>
+</dependency>
+----
+
+[TIP]
+====
+Inside the `<version>` tags, put the desired version number, the word `RELEASE` for the latest release, or `SNAPSHOT` for the latest available version. The available versions to date are:
+
+// Assuming the next release is certified
+* *1.0.3*
+====
+
+
+== Demo Mule Applications Using Connector
+////
+add links to demos
+////
+
+To see the Vantiq Mulesoft Connector in action try the demo flow in link:https://github.com/Vantiq/vantiq-connector-MuleSoft/blob/release/1.0.3/demo/demo-roundtrip[demo-roundtrip] to see the passage of data from Vantiq, to MuleSoft and back in a simple flow.
+
+
+=== Tips
+////
+optional
+////
+* Contact support@vantiq.com for any questions related to the Vantiq connector, or for help troubleshooting any issues with Vantiq.
+
+
+== Resources
+
+// Will this link actually work?
+* Access the link:/release-notes/vantiq-connector-release-notes[Vantiq Connector Release Notes].

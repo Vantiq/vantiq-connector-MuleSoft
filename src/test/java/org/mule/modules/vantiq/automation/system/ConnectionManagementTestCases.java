@@ -89,7 +89,7 @@ public class ConnectionManagementTestCases {
 
     @Test
     public void testValidConnection() throws Exception {
-        // These credentials are for a user with virtually no permissions within our system
+        // These credentials are for a user with read only permissions within the certification namespace
         runTestWithoutFailure("https://dev.vantiq.com", "mule_certification_user", "Mul3S0ft");
     }
 
