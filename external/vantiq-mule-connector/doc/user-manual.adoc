@@ -1,0 +1,42 @@
+= Vantiq MuleSoft Connector
+
+The http://www.vantiq.com[Vantiq] https://www.mulesoft.com/[MuleSoft] connector provides bi-directional communication between Vantiq and the services exposed through MuleSoft.
+
+== Dependencies
+
+- [Vantiq connector common](https://github.com/Vantiq/vantiq-connector-common)
+
+Note: The MuleSoft connector itself provides connectivity between Vantiq and MuleSoft. One or more adapters are required that define the specific data types and control actions associated with the services exposed through MuleSoft.
+
+== Install
+
+This connector consists of the following:
+
+* Vantiq Anypoint Connector that provides the MuleSoft Anypoint side of the integration that allows Vantiq to participate in the Anypoint flows.
+* MuleSoft Connector that provides support for the Vantiq side of the connector in the form of a Vantiq Rule. More information on Vantiq adapters and connectors is available https://dev.vantiq.com/docs/system/integration/overview/index.html#vantiq-adapters-and-connectors[here].
+
+=== Vantiq Anypoint Connector
+
+See the link:../README.md[Vantiq Anypoint Connector README] on installation and execution details.
+
+=== MuleSoft Connector
+
+The MuleSoft connector can be imported into a Vantiq namespace using the https://github.com/Vantiq/vantiq-connector-common[Vantiq connector common] `vantiq-import-adapter.sh` script:
+
+ % vantiq-import-adapter.sh https://github.com/Vantiq/vantiq-connector-MuleSoft.git
+
+Or directly using the CLI:
+
+ % git clone https://github.com/Vantiq/vantiq-connector-MuleSoft.git
+ % cd vantiq-connector-MuleSoft/src/main/resources/vantiq
+ % vantiq -s <profile> import
+
+where `<profile>` provides the credentials for the Vantiq CLI.
+
+=== Vantiq Connector Demo
+
+To see the Vantiq Mulesoft Connector in action try the demo flow in link:../demo/demo-roundtrip[demo-roundtrip] to see the passage of data from Vantiq, to MuleSoft and back in a simple flow.
+
+= Copyright and License
+
+Copyright &copy; 2016 Vantiq, Inc.  Code released under the [MIT License](./LICENSE)

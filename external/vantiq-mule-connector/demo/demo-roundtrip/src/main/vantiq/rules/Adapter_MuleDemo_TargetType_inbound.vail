@@ -1,0 +1,16 @@
+RULE Adapter_MuleDemo_TargetType_inbound
+
+//--------------------------------------------------------
+// Listen for data on "/system/adapter/<type>/inbound" topic
+//--------------------------------------------------------
+WHEN PUBLISH OCCURS ON "/system/adapter/inbound/MuleDemo_TargetType" AS m
+
+//--------------------------------------------------------
+// Perform any data tranformations
+//--------------------------------------------------------
+var obj = m.newValue
+
+//--------------------------------------------------------
+// Save the data
+//--------------------------------------------------------
+UPSERT MuleDemo_TargetType(obj)
