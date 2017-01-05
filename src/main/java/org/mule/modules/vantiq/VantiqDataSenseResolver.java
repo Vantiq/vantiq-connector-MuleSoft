@@ -121,49 +121,60 @@ public class VantiqDataSenseResolver {
         for(Map.Entry<String, JsonElement> entry : properties.entrySet()) {
             String        prop = entry.getKey();
             JsonObject propDef = entry.getValue().getAsJsonObject(); 
-            String        type = propDef.get("type").getAsString(); 
+            String        type = propDef.get("type").getAsString();
 
             // Skip system fields
             if(propDef.get("system") != null && propDef.get("system").getAsBoolean()) {
                 continue;                
             }
             
-            switch(type) {
-                case "String":
-                    doDef.addSimpleField(prop, DataType.STRING);
-                    break;
-                case "DateTime":
-                    doDef.addSimpleField(prop, DataType.DATE_TIME);
-                    break;
-                case "Boolean":
-                    doDef.addSimpleField(prop, DataType.BOOLEAN);
-                    break;
-                case "Real":
-                    doDef.addSimpleField(prop, DataType.DOUBLE);
-                    break;
-                case "Integer":
-                    doDef.addSimpleField(prop, DataType.LONG);
-                    break;
-                case "Decimal":
-                    doDef.addSimpleField(prop, DataType.DECIMAL);
-                    break;
-                case "Currency":
-                    doDef.addSimpleField(prop, DataType.STRING);
-                    break;
-                case "Object":
-                case "GeoJSON":
-                    doDef.addDynamicObjectField(prop).endDynamicObject();
-                    break;
-                default:
-                    // Skip unknown attributes
-                    log.warn("Unknown data type: " + prop + " in " + id);    
-            }
+            addPropertyToDOB(doDef, type, prop, id);
         }
         
         DefinedMapMetaDataModel model = doDef.build();
         return new DefaultMetaData(model);
     }
 
+    /**
+     * Add a property of a specific Vantiq scalar type to the 
+     * DynamicObjectBuilder (DOB)
+     * 
+     * @param doDef The DOB which will have the property added
+     * @param type The scalar type in the Vantiq system of the prop
+     * @param prop The actual value to be added to the DOB
+     * @param id The unique identifier for the data type 
+     */
+    private static void addPropertyToDOB(DynamicObjectBuilder doDef, String type, String prop, String id) {
+            switch(type) {
+            case "DateTime":
+                doDef.addSimpleField(prop, DataType.DATE_TIME);
+                break;
+            case "Boolean":
+                doDef.addSimpleField(prop, DataType.BOOLEAN);
+                break;
+            case "Real":
+                doDef.addSimpleField(prop, DataType.DOUBLE);
+                break;
+            case "Integer":
+                doDef.addSimpleField(prop, DataType.LONG);
+                break;
+            case "Decimal":
+                doDef.addSimpleField(prop, DataType.DECIMAL);
+                break;
+            case "String":
+            case "Currency":
+                doDef.addSimpleField(prop, DataType.STRING);
+                break;
+            case "Object":
+            case "GeoJSON":
+                doDef.addDynamicObjectField(prop).endDynamicObject();
+                break;
+            default:
+                // Skip unknown attributes
+                log.warn("Unknown data type: " + prop + " in " + id);    
+        }
+    }
+    
     /**
      * Returns the connector instance.
      * 
