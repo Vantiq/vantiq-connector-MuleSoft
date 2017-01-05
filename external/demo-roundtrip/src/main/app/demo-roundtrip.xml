@@ -9,8 +9,9 @@ http://www.mulesoft.org/schema/mule/vantiq http://www.mulesoft.org/schema/mule/v
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
     <vantiq:config name="Vantiq_Mule_Cert" username="mule_certification_admin" password="Mul3C3rt!" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
+    <vantiq:config name="Vantiq__Configuration" username="mule_certification_admin" password="Mul3C3rt!" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
     <flow name="demo-roundtripFlow">
-        <vantiq:subscribe-action config-ref="Vantiq_Mule_Cert"   doc:name="Vantiq (Streaming)" action="MuleDemo_TriggerMessage"/>
+        <vantiq:subscribe-action config-ref="Vantiq__Configuration" action="MuleDemo_TriggerMessage" doc:name="Vantiq (Streaming)"/>
         <logger message="Input Payload: &quot;#[payload]&quot;" level="INFO" doc:name="Logger"/>
         <splitter expression="#[payload.value.payload]" doc:name="Splitter"/>
         <set-payload value="#[['id': &quot;ID-&quot; + new Date(), 'msg': payload.msg, 'value': (int) payload.value ]]" doc:name="Set Payload"/>

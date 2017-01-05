@@ -53,12 +53,29 @@ public class ConnectionManagementTestCases {
         assertThat("Connection should be invalid", cm.validateConnection(), is(false));
     }
     
+    private void runTestWithoutFailure(String url,
+            String username,
+            String password) throws Exception {
+        VantiqConnectionManagement cm = new VantiqConnectionManagement();
+
+        // Verify failure
+        try {
+            cm.setServer(url);
+            cm.connect(username, password);
+        } catch(ConnectionException ex) {
+            fail("Expected successful connection but failed with error: " + ex.getMessage());
+        }
+
+        // Ensure connection is valid
+        assertThat("Connection should be valid", cm.validateConnection(), is(true));
+    }
+
     private <T> void runTestWithRuntimeError(String url, 
                                              String username, 
                                              String password, 
                                              Class<T> expectedException) throws Exception {        
         VantiqConnectionManagement cm = new VantiqConnectionManagement();
-        
+
         // Verify failure
         try {
             cm.setServer(url);
@@ -69,7 +86,13 @@ public class ConnectionManagementTestCases {
             assertThat(msg, ex.getCause(), instanceOf(expectedException));
         }
     }
-    
+
+    @Test
+    public void testValidConnection() throws Exception {
+        // These credentials are for a user with virtually no permissions within our system
+        runTestWithoutFailure("https://dev.vantiq.com", "mule_certification_user", "Mul3S0ft");
+    }
+
     @Test
     public void testInvalidServer() throws Exception {
         runTestWithRuntimeError("http://this-is.a-dummy.server-url", "someuser", "somepassword", UnknownHostException.class);
@@ -83,6 +106,11 @@ public class ConnectionManagementTestCases {
     @Test
     public void testInvalidCredentials() throws Exception {
         runTestWithFailure("https://dev.vantiq.com", "system", "somepassword", "Invalid Credentials");
+    }
+
+    @Test
+    public void testBlankCredentials() throws Exception {
+        runTestWithFailure("https://dev.vantiq.com", "", "", "Invalid Credentials");
     }
 
 }
