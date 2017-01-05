@@ -1,45 +1,90 @@
-# MuleSoft Connector
+<div style="height: 50px"><img style="float:right" alt="Vantiq Logo" src="http://vantiq.com/wp-content/uploads/2015/12/vantiq.png"/></div>
 
-The [MuleSoft](https://www.mulesoft.com/) connector provides support for connecting to 
-3rd party systems through MuleSoft Anypoint.  MuleSoft is an integration platform that 
-can be deployed on-premises or in the cloud.  This connector provides bi-directional 
-communication between Vantiq and the services exposed through MuleSoft.
+# Vantiq Anypoint Connector
 
-## Dependencies
+The Vantiq connector provides integration with the Vantiq platform.
 
-- [Vantiq connector common](https://github.com/Vantiq/vantiq-connector-common)
+## Processors
 
-Note: The MuleSoft connector itself provides connectivity between Vantiq and MuleSoft.  
-One or more adapters are required that define the specific data types and control
-actions associated with the services exposed through MuleSoft.
+The Vantiq connector supports the followings means for publishing data from Anypoint to Vantiq.
 
-## Install
+### `publishData`
 
-This connector consists of the following:
+The `publishData` processor allows well defined data types to be published into Vantiq.
+The data types must be pre-defined within Vantiq that matches the data being pushed.  These
+pre-defined types are generally available through *Vantiq Adapters*.  The data published 
+into Vantiq is handled by the Vantiq side of the *MuleSoft Connector* and initiates the
+appropriate *Vantiq Adapter* associated with the given data type.
 
-- [Vantiq Anypoint Connector](external/vantiq-mule-connector) that
-provides the MuleSoft Anypoint side of the integration that allows Vantiq to participate in the 
-Anypoint flows.
-- [MuleSoft Connector](vantiq) that provides support for the Vantiq side of the connector.
+DataSense is supported that provides metadata of the Vantiq data types into Anypoint.
 
-### Vantiq Anypoint Connector
+### `publishTopic`
 
-See the [Vantiq Anypoint Connector README](external/vantiq-mule-connector/README.md) on installation and execution details.
+To publish ad-hoc data into Vantiq, the `publishTopic` processor provides the means for 
+triggering an event in Vantiq on a given topic.  Rules within Vantiq may be used to listen
+for the given event.
 
-### MuleSoft Connector
+### `insertData`
 
-The MuleSoft connector can be imported into a Vantiq namespace using the [Vantiq connector common](https://github.com/Vantiq/vantiq-connector-common) `vantiq-import-adapter.sh` script:
+The `insertData` processor inserts data directly into a Vantiq data type without
+going through a *Vantiq Adapter* to transform the data.  All fields must match the
+required data formats expected by Vantiq.
 
-    % vantiq-import-adapter.sh https://github.com/Vantiq/vantiq-connector-MuleSoft.git
+DataSense is supported that provides metadata of the Vantiq data types into Anypoint.
 
-Or directly using the CLI:
+## Sources
 
-    % git clone https://github.com/Vantiq/vantiq-connector-MuleSoft.git
-    % cd vantiq-connector-MuleSoft/vantiq
-    % vantiq -s <profile> import
+The Vantiq connector supports creating messages within Anypoint from Vantiq using the
+given sources.
 
-where `<profile>` provides the credentials for the Vantiq CLI.
+### `subscribeTopic`
+
+The `subscribeTopic` source creates a Websocket connection to Vantiq and listens on 
+a specific Vantiq topic.  Any event on that topic in Vantiq triggers a message in
+Anypoint.
+
+### `subscribeType`
+
+The `subscribeType` source creates a Websocket connection to Vantiq and listens 
+for data type events on a specific Vantiq data type.  The subscription may listen
+for INSERT, UPDATE, or DELETE events.  Each event triggers a message in Anypoint.
+
+### `selectData`
+
+The `selectData` source polls Vantiq for data based on a specific query.  The
+result of the query triggers a message in Anypoint.
+
+# Mule supported versions
+
+Mule 3.6+
+
+# Installation 
+
+## Local
+
+To build and install locally, clone this repo.  Then, build and package the connector:
+
+```
+mvn clean package
+```
+
+The connector can be uploaded and installed into Anypoint Studio using Help → Install New Software.  To install from the exploded form, install from:
+
+```
+target/update-site
+```
+
+To install from the Zip file form, install from:
+
+```
+target/UpdateSite.zip
+```
+
+## Update Site
+
+For released connectors you can download them from the update site in Anypoint Studio. 
+Open Anypoint Studio, go to Help → Install New Software and select Anypoint Connectors Update Site where you’ll find all avaliable connectors.
 
 # Copyright and License
 
-Copyright &copy; 2016 Vantiq, Inc.  Code released under the [MIT License](./LICENSE)
+Copyright &copy; Vantiq, Inc.  Code released under the [MIT license](./LICENSE.md).

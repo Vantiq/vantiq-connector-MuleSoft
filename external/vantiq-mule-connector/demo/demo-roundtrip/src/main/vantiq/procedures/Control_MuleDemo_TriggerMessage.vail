@@ -1,8 +1,0 @@
-PROCEDURE Control_MuleDemo_TriggerMessage(msg, value)
-
-var payload = {
-    msg: msg,
-    value: value
-}
-
-Adapter_SendAction("MuleDemo", "TriggerMessage", [payload])

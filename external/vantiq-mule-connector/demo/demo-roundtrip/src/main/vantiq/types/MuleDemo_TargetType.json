@@ -1,9 +1,0 @@
-{
-    "name": "MuleDemo_TargetType",
-    "properties": {
-        "id":    { "type": "String"  },
-        "msg":   { "type": "String"  },
-        "value": { "type": "Integer" }
-    },
-    "naturalKey": [ "id" ]
-}
