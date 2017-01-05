@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/vantiq http://www.mulesoft.org/schema/mule/vantiq/current/mule-vantiq.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
-    <vantiq:config name="Vantiq_Mule_Cert" username="mule_certification_admin" password="" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
+    <vantiq:config name="Vantiq_Mule_Cert" username="VANTIQ_USERNAME" password="VANTIQ_PASSWORD" server="https://dev.vantiq.com" doc:name="Vantiq: Configuration"/>
     <flow name="demo-roundtripFlow">
         <vantiq:subscribe-action config-ref="Vantiq_Mule_Cert"   doc:name="Vantiq (Streaming)" action="MuleDemo_TriggerMessage"/>
         <logger message="Input Payload: &quot;#[payload]&quot;" level="INFO" doc:name="Logger"/>
