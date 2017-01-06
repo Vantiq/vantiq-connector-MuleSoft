@@ -145,21 +145,12 @@ public class VantiqDataSenseResolver {
      * @param id The unique identifier for the data type 
      */
     private static void addPropertyToDOB(DynamicObjectBuilder doDef, String type, String prop, String id) {
-            switch(type) {
+        switch(type) {
             case "DateTime":
                 doDef.addSimpleField(prop, DataType.DATE_TIME);
                 break;
             case "Boolean":
                 doDef.addSimpleField(prop, DataType.BOOLEAN);
-                break;
-            case "Real":
-                doDef.addSimpleField(prop, DataType.DOUBLE);
-                break;
-            case "Integer":
-                doDef.addSimpleField(prop, DataType.LONG);
-                break;
-            case "Decimal":
-                doDef.addSimpleField(prop, DataType.DECIMAL);
                 break;
             case "String":
             case "Currency":
@@ -170,11 +161,42 @@ public class VantiqDataSenseResolver {
                 doDef.addDynamicObjectField(prop).endDynamicObject();
                 break;
             default:
+                // also try and check if it's a numeric type which must
+                // be done separately due to cyclomatic complexity constraints
+                addNumericPropertyToDOB(doDef, type, prop, id);
+                break;
+        }
+    }
+
+    /**
+     * This method exists purely to satisfy the static analysis requirement
+     * that the above method have a cyclomatic complexity no greater than 10
+     *
+     * To that (idiotic) end, we handle numeric types here instead of in
+     * addPropertyToDOB
+     *
+     * @param doDef The DOB which will have the property added
+     * @param type The scalar type in the Vantiq system of the prop
+     * @param prop The actual value to be added to the DOB
+     * @param id The unique identifier for the data type
+     */
+    private static void addNumericPropertyToDOB(DynamicObjectBuilder doDef, String type, String prop, String id) {
+        switch(type) {
+            case "Real":
+                doDef.addSimpleField(prop, DataType.DOUBLE);
+                break;
+            case "Integer":
+                doDef.addSimpleField(prop, DataType.LONG);
+                break;
+            case "Decimal":
+                doDef.addSimpleField(prop, DataType.DECIMAL);
+                break;
+            default:
                 // Skip unknown attributes
                 log.warn("Unknown data type: " + prop + " in " + id);    
         }
     }
-    
+
     /**
      * Returns the connector instance.
      * 
