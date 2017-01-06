@@ -27,13 +27,32 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mule.api.ConnectionException;
 import org.mule.modules.vantiq.VantiqConnectionManagement;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConnectionManagementTestCases {
     
+    private static final String DEFAULT_SPRING_CONFIG = "AutomationSpringBeans.xml";
+
+    private static ApplicationContext testContext;
+
+    private static HashMap<String, Object> vantiqCredentials;
+
+    @Before
+    public void setUp() throws Exception {
+        ArrayList<String> springConfigs = new ArrayList<String>();
+        springConfigs.add(DEFAULT_SPRING_CONFIG);
+        testContext = new ClassPathXmlApplicationContext(springConfigs.toArray(new String[springConfigs.size()]));
+        vantiqCredentials = (HashMap<String, Object>) testContext.getBean("vantiqCredentials");
+    }
+
     private void runTestWithFailure(String url, 
                                     String username, 
                                     String password,
@@ -87,10 +106,13 @@ public class ConnectionManagementTestCases {
         }
     }
 
+    // For this test to work automation-credentials.properties must be supplied
+    // in src/test/resources and contain a valid username and password
     @Test
     public void testValidConnection() throws Exception {
-        // These credentials are for a user with read only permissions within the certification namespace
-        runTestWithoutFailure("https://dev.vantiq.com", "mule_certification_user", "Mul3S0ft");
+        runTestWithoutFailure("https://dev.vantiq.com",
+                (String)vantiqCredentials.get("validUsername"),
+                (String)vantiqCredentials.get("validPassword"));
     }
 
     @Test
